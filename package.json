@@ -1,0 +1,23 @@
+{
+  "name": "react-express-multipage-newv",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cheerio": "^1.0.0-rc.3",
+    "express": "^4.16.4",
+    "file-system": "^2.2.2",
+    "find-remove": "^1.2.2",
+    "nodemon": "^1.19.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4",
+    "rimraf": "^2.6.3"
+  }
+}

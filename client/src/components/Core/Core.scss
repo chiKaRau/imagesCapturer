@@ -1,0 +1,63 @@
+.blue {
+  color: blue;
+}
+
+body {
+  background-color: #282c34;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+}
+
+.search {
+  text-align: center;
+  margin-top: 45vh;
+  transition: margin-top 0.5s;
+  .search_form {
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+  .search_button {
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    margin: 5px;
+  }
+  #panel {
+    padding: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80%;
+    overflow: auto;
+    border: 2px solid white;
+    border-radius: 25px;
+    background-color: #282c34;
+    color: white;
+    display: none;
+  }
+}
+
+.optionbuttons {
+  margin: 5px;
+  display: inline-block;
+}
+
+::-webkit-input-placeholder {
+  text-align: center;
+}
+
+:-moz-placeholder {
+  /* Firefox 18- */
+  text-align: center;
+}
+
+::-moz-placeholder {
+  /* Firefox 19+ */
+  text-align: center;
+}
+
+:-ms-input-placeholder {
+  text-align: center;
+}

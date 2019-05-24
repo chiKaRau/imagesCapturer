@@ -1,0 +1,23 @@
+.responsive {
+  width: 100%;
+  height: auto;
+}
+
+
+.modal-body {
+  width: inherit !important;
+  overflow: auto;
+}
+
+.modal-body img {
+  width: inherit !important;
+}
+
+.modal-title {
+  width: inherit !important;
+  overflow: auto;
+}
+
+.modal-title p {
+  font-size: 1rem !important;
+}
