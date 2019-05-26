@@ -21,6 +21,32 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname + "/client/build/index.html"));
 });
 
+//delete imagezip every 24 hours
+//to be save if some zips accidently couldn't not be delete
+let savepath = __dirname + "/client/build/";
+fs.readdir(savepath, function(err, files) {
+  files.forEach(function(file, index) {
+    fs.stat(path.join(savepath, file), function(err, stat) {
+      if (err) {
+        return console.error(err);
+      }
+
+      setInterval(() => {
+        console.log(file);
+
+        if (file === "imagezip") {
+          return rimraf(path.join(savepath, file), function(err) {
+            if (err) {
+              return console.error(err);
+            }
+            console.log("successfully deleted");
+          });
+        }
+      }, 60 * 60 * 24 * 1000); //file will be delete in 3 mins
+    });
+  });
+});
+
 //zip files -> create a new zip files
 app.post("/zip", (req, res) => {
   console.log("zip called");
