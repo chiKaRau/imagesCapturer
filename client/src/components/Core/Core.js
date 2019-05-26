@@ -16,12 +16,33 @@ class Core extends Component {
     imgTagImageAry: [],
     aTagImageAry: [],
     displayAry: "displayImg",
-    status: "Images are ready to zip."
+    status: "Images are ready to zip.",
+    seconds: 180
   };
 
   componentDidMount() {
     $(".optionbuttons").hide();
     $(".status").hide();
+    $(".countDown").hide();
+  }
+
+  countDown = () => {
+    this.setState(
+      {
+        seconds: this.state.seconds - 1
+      },
+      () => {
+        this.state.seconds < 1 && clearInterval(this.interval);
+      }
+    );
+  };
+
+  startCountDown = () => {
+    this.interval = setInterval(this.countDown, 1000);
+  };
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   advance = () => {
@@ -75,6 +96,10 @@ class Core extends Component {
 
   //zip button -> zip all images -> display download buttons
   zipImage = () => {
+    //reset the countdown (interval);
+    //if it doesn't have the following line
+    //seconds will be jumping twice
+    clearInterval(this.interval);
     let filename = Math.random()
       .toString(36)
       .slice(-5);
@@ -85,15 +110,23 @@ class Core extends Component {
     this.setState(
       {
         filename: filename,
-        status: "The images are zipping..."
+        status: "The images are zipping...",
+        seconds: 180
       },
       () => {
         axios
           .post("/zip", { filename: this.state.filename, imageAry: imageAry })
           .then(res => {
-            this.setState({
-              status: "Images zip has been created."
-            });
+            this.setState(
+              {
+                status: "Images zip has been created."
+              },
+              () => {
+                //start the countdown 
+                this.startCountDown();
+                $(".countDown").fadeIn(1000);
+              }
+            );
           });
       }
     );
@@ -214,6 +247,9 @@ class Core extends Component {
             }}
           >
             Status : {this.state.status}
+          </p>
+          <p className="countDown" style={{ color: "red" }}>
+            Image Zip file will be Expires in {this.state.seconds} seconds
           </p>
         </div>
 
