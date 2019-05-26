@@ -5,17 +5,23 @@ import { Navbar, Nav, Form, FormControl, Button } from "react-bootstrap";
 import axios from "axios";
 import Image from "../Image/Image.js";
 
+//1 status
+//2 image onerror
+//3 timer
+
 class Core extends Component {
   state = {
     url: "",
     filename: "",
     imgTagImageAry: [],
     aTagImageAry: [],
-    displayAry: "displayImg"
+    displayAry: "displayImg",
+    status: "Images are ready to zip."
   };
 
   componentDidMount() {
     $(".optionbuttons").hide();
+    $(".status").hide();
   }
 
   advance = () => {
@@ -50,6 +56,7 @@ class Core extends Component {
       $(document).ready(function() {
         $(".search").css("margin-top", "5vh");
         $(".optionbuttons").fadeIn(1000);
+        $(".status").fadeIn(1000);
       });
     } else {
       alert("invalid Url");
@@ -71,14 +78,23 @@ class Core extends Component {
     let filename = Math.random()
       .toString(36)
       .slice(-5);
+    let imageAry;
+    this.state.displayAry === "displayImg"
+      ? (imageAry = this.state.imgTagImageAry)
+      : (imageAry = this.state.aTagImageAry);
     this.setState(
       {
-        filename: filename
+        filename: filename,
+        status: "The images are zipping..."
       },
       () => {
-        axios.post("/zip", { filename: this.state.filename }).then(res => {
-          console.log(res);
-        });
+        axios
+          .post("/zip", { filename: this.state.filename, imageAry: imageAry })
+          .then(res => {
+            this.setState({
+              status: "Images zip has been created."
+            });
+          });
       }
     );
   };
@@ -139,12 +155,11 @@ class Core extends Component {
             className="optionbuttons"
             variant="outline-info"
             onClick={this.zipImage}
-            disabled
           >
             Zip
           </Button>
           <Button className="optionbuttons" variant="outline-info">
-            <a href="hello.txt" download>
+            <a href={"imagezip/" + this.state.filename + ".zip"} download>
               Download
             </a>
           </Button>
@@ -176,6 +191,30 @@ class Core extends Component {
               ATag?
             </label>
           </div>
+        </div>
+
+        <div className="status" style={{ color: "white" }}>
+          <p
+            style={{
+              display: "inline-block",
+              marginLeft: "5px",
+              marginRight: "5px"
+            }}
+          >
+            Total Images :
+            {this.state.displayAry === "displayImg"
+              ? this.state.imgTagImageAry.length
+              : this.state.aTagImageAry.length}
+          </p>
+          <p
+            style={{
+              display: "inline-block",
+              marginLeft: "5px",
+              marginRight: "5px"
+            }}
+          >
+            Status : {this.state.status}
+          </p>
         </div>
 
         <div className="container-fluid">

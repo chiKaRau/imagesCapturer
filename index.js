@@ -6,6 +6,8 @@ const bodyParser = require("body-parser");
 let request = require("request");
 request = require("request-promise");
 let cheerio = require("cheerio");
+const jszip = require("jszip");
+const fetch = require("node-fetch");
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -22,45 +24,72 @@ app.get("*", (req, res) => {
 //zip files -> create a new zip files
 app.post("/zip", (req, res) => {
   console.log("zip called");
+  //console.log(req.body.imageAry);
   //if file not existed, create one
   if (!fs.existsSync(__dirname + "/client/build/imagezip")) {
     fs.mkdirSync(__dirname + "/client/build/imagezip");
   }
 
   //create files
-  let savedfile =
-    __dirname + "/client/build/imagezip/" + req.body.filename + ".txt";
-  fs.writeFile(savedfile, "Hey there!", function(err) {
-    if (err) {
-      return console.log(err);
+  let zip = new jszip();
+  let imageAry = [],
+    url,
+    filename;
+  //create an array for url and imagename
+  for (url of req.body.imageAry) {
+    imageAry.push({
+      url: url,
+      filename: url.substr(url.lastIndexOf("/") + 1, url.length - 1)
+    });
+  }
+  //zip the url image
+  let i = 0;
+  const server = async () => {
+    for (const { url, filename } of imageAry) {
+      response = await fetch(url);
+      buffer = await response.buffer();
+      zip.file(filename, buffer);
+      i++;
+      process.stdout.write("Zipping " + i + " images\033[0G");
     }
-
-    console.log("The file was saved!");
+  };
+  let savedzip =
+    __dirname + "/client/build/imagezip/" + req.body.filename + ".zip";
+  server().then(() => {
+    zip
+      .generateNodeStream({ type: "nodebuffer", streamFiles: true })
+      .pipe(fs.createWriteStream(savedzip))
+      .on("finish", function() {
+        console.log(req.body.filename + ".zip has been created");
+        deleteZip();
+        res.end();
+      });
   });
 
-  //delete files in 5 mins
-  let savepath = __dirname + "/client/build/imagezip";
-  fs.readdir(savepath, function(err, files) {
-    files.forEach(function(file, index) {
-      fs.stat(path.join(savepath, file), function(err, stat) {
-        if (err) {
-          return console.error(err);
-        }
-        setTimeout(() => {
-          if (file === req.body.filename + ".txt") {
-            return rimraf(path.join(savepath, file), function(err) {
-              if (err) {
-                return console.error(err);
-              }
-              console.log("successfully deleted");
-            });
+  const deleteZip = () => {
+    //delete files in 5 mins
+    let savepath = __dirname + "/client/build/imagezip";
+    fs.readdir(savepath, function(err, files) {
+      files.forEach(function(file, index) {
+        fs.stat(path.join(savepath, file), function(err, stat) {
+          if (err) {
+            return console.error(err);
           }
-        }, 60 * 1 * 1000); //file will be delete in 5 mins
+
+          setTimeout(() => {
+            if (file === req.body.filename + ".zip") {
+              return rimraf(path.join(savepath, file), function(err) {
+                if (err) {
+                  return console.error(err);
+                }
+                console.log("successfully deleted");
+              });
+            }
+          }, 60 * 3 * 1000); //file will be delete in 3 mins
+        });
       });
     });
-  });
-
-  res.send();
+  };
 });
 
 //request images
