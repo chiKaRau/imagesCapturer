@@ -3,7 +3,6 @@
   height: auto;
 }
 
-
 .modal-body {
   width: inherit !important;
   overflow: auto;
@@ -20,4 +19,9 @@
 
 .modal-title p {
   font-size: 1rem !important;
+}
+
+img {
+  background-image: url("../../images/loading.gif");
+  background-size: contain;
 }

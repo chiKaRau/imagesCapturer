@@ -61,3 +61,13 @@ body {
 :-ms-input-placeholder {
   text-align: center;
 }
+
+.downloadButton {
+  color: #17a2b8 !important;
+  &:hover  {
+    color: #fff !important;
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+    text-decoration: none;
+  }
+}

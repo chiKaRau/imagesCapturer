@@ -5,9 +5,8 @@ import { Navbar, Nav, Form, FormControl, Button } from "react-bootstrap";
 import axios from "axios";
 import Image from "../Image/Image.js";
 
-//1 status
 //2 image onerror
-//3 timer
+//logo / title
 
 class Core extends Component {
   state = {
@@ -17,7 +16,11 @@ class Core extends Component {
     aTagImageAry: [],
     displayAry: "displayImg",
     status: "Images are ready to zip.",
-    seconds: 180
+    seconds: 180,
+    addDomainName: false,
+    aTagImageAryCopy: [],
+    imgTagImageAryCopy: [],
+    zipped: ""
   };
 
   componentDidMount() {
@@ -67,11 +70,11 @@ class Core extends Component {
     let url = this.state.url;
     if (this.validURL(url)) {
       axios.post("/requestImages", { url: this.state.url }).then(res => {
-        console.log(res);
-
+        //console.log(res);
         this.setState({
           imgTagImageAry: res.data.imgTagImageAry,
-          aTagImageAry: res.data.aTagImageAry
+          aTagImageAry: res.data.aTagImageAry,
+          zipped: false
         });
       });
       $(document).ready(function() {
@@ -88,10 +91,57 @@ class Core extends Component {
     //evt.preventDefault(); add this would cause callback bug
     const { name, value, type, checked } = evt.target;
     type === "checkbox"
-      ? this.setState({ [name]: checked })
+      ? this.setState({ [name]: checked }, () => {
+          this.handleDomainName();
+        })
       : this.setState({
           [name]: value
         });
+  };
+
+  handleDomainName = () => {
+    let aTagImageAry = this.state.aTagImageAry;
+    let imgTagImageAry = this.state.imgTagImageAry;
+
+    if (this.state.addDomainName) {
+      this.setState(
+        {
+          aTagImageAryCopy: aTagImageAry,
+          imgTagImageAryCopy: imgTagImageAry
+        },
+        () => {
+          this.addDomainName(aTagImageAry, imgTagImageAry);
+        }
+      );
+    } else {
+      console.log(this.state.aTagImageAryCopy)
+      this.setState({
+        aTagImageAry: this.state.aTagImageAryCopy,
+        imgTagImageAry: this.state.imgTagImageAryCopy
+      });
+    }
+  };
+
+  addDomainName = (aTagImageAry, imgTagImageAry) => {
+    let aTagImageAryNew = [];
+    let imgTagImageAryNew = [];
+    let url = this.state.url;
+    let domain = url.slice(0, url.indexOf("/", 8)) + "/";
+    for (let ele of aTagImageAry) {
+      aTagImageAryNew.push(
+        domain + ele.slice(ele.indexOf("//") + 2, ele.length)
+      );
+    }
+    for (let ele of imgTagImageAry) {
+      imgTagImageAryNew.push(
+        domain + ele.slice(ele.indexOf("//") + 2, ele.length)
+      );
+    }
+    console.log(aTagImageAryNew);
+    this.setState({
+      aTagImageAry: aTagImageAryNew,
+      imgTagImageAry: imgTagImageAryNew
+    });
   };
 
   //zip button -> zip all images -> display download buttons
@@ -119,10 +169,11 @@ class Core extends Component {
           .then(res => {
             this.setState(
               {
-                status: "Images zip has been created."
+                status: "Images zip has been created.",
+                zipped: true
               },
               () => {
-                //start the countdown 
+                //start the countdown
                 this.startCountDown();
                 $(".countDown").fadeIn(1000);
               }
@@ -191,38 +242,69 @@ class Core extends Component {
           >
             Zip
           </Button>
-          <Button className="optionbuttons" variant="outline-info">
-            <a href={"imagezip/" + this.state.filename + ".zip"} download>
+
+          {this.state.zipped ? (
+            <Button className="optionbuttons" variant="outline-info">
+              <a
+                className="downloadButton"
+                href={"imagezip/" + this.state.filename + ".zip"}
+                download
+              >
+                Download
+              </a>
+            </Button>
+          ) : (
+            <Button className="optionbuttons" variant="outline-info" disabled>
               Download
-            </a>
-          </Button>
+            </Button>
+          )}
         </div>
 
         <div id="panel" class="jumbotron jumbotron-fluid">
           <div class="container">
-            <p style={{ color: "red" }}>
-              Bad Resolution? Check Another Button may Solve the Problem.
-            </p>
-            <label style={{ margin: "5px" }}>
-              <input
-                type="radio"
-                name="displayAry"
-                value="displayImg"
-                checked={this.state.displayAry === "displayImg"}
-                onChange={this.handleChange}
-              />
-              ImgTag?
-            </label>
-            <label style={{ margin: "5px" }}>
-              <input
-                type="radio"
-                name="displayAry"
-                value="displayA"
-                checked={this.state.displayAry === "displayA"}
-                onChange={this.handleChange}
-              />
-              ATag?
-            </label>
+            <div>
+              <p
+                style={{ color: "red", display: "inline-block", margin: "5px" }}
+              >
+                Bad Resolution? Try this.
+              </p>
+              <label style={{ margin: "5px", display: "inline-block" }}>
+                <input
+                  type="radio"
+                  name="displayAry"
+                  value="displayImg"
+                  checked={this.state.displayAry === "displayImg"}
+                  onChange={this.handleChange}
+                />
+                ImgTag?
+              </label>
+              <label style={{ margin: "5px", display: "inline-block" }}>
+                <input
+                  type="radio"
+                  name="displayAry"
+                  value="displayA"
+                  checked={this.state.displayAry === "displayA"}
+                  onChange={this.handleChange}
+                />
+                ATag?
+              </label>
+            </div>
+            <div>
+              <p
+                style={{ color: "red", display: "inline-block", margin: "5px" }}
+              >
+                Fail to load Image?
+              </p>
+              <label style={{ margin: "5px", display: "inline-block" }}>
+                <input
+                  type="checkbox"
+                  name="addDomainName"
+                  checked={this.state.addDomainName}
+                  onChange={this.handleChange}
+                />
+                Fix Image link
+              </label>
+            </div>
           </div>
         </div>
 
