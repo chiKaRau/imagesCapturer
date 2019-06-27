@@ -12,6 +12,7 @@
   "dependencies": {
     "body-parser": "^1.19.0",
     "cheerio": "^1.0.0-rc.3",
+    "cors": "^2.8.5",
     "express": "^4.16.4",
     "file-system": "^2.2.2",
     "find-remove": "^1.2.2",

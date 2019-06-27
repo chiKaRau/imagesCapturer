@@ -8,10 +8,12 @@ request = require("request-promise");
 let cheerio = require("cheerio");
 const jszip = require("jszip");
 const fetch = require("node-fetch");
+const cors = require("cors");
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(cors());
 
 // Serve the static files from the React app
 app.use(express.static(path.join(__dirname, "client/build")));
@@ -88,7 +90,7 @@ app.post("/zip", (req, res) => {
       .on("finish", function() {
         console.log(req.body.filename + ".zip has been created");
         deleteZip();
-        res.end();
+        res.send("done");
       });
   });
 

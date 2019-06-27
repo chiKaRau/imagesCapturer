@@ -114,7 +114,7 @@ class Core extends Component {
         }
       );
     } else {
-      console.log(this.state.aTagImageAryCopy)
+      console.log(this.state.aTagImageAryCopy);
       this.setState({
         aTagImageAry: this.state.aTagImageAryCopy,
         imgTagImageAry: this.state.imgTagImageAryCopy
@@ -164,9 +164,10 @@ class Core extends Component {
         seconds: 180
       },
       () => {
-        axios
+        return axios
           .post("/zip", { filename: this.state.filename, imageAry: imageAry })
           .then(res => {
+            //console.log(res.data);
             this.setState(
               {
                 status: "Images zip has been created.",
@@ -178,6 +179,9 @@ class Core extends Component {
                 $(".countDown").fadeIn(1000);
               }
             );
+          })
+          .catch(error => {
+            console.log(error.response);
           });
       }
     );
@@ -243,21 +247,15 @@ class Core extends Component {
             Zip
           </Button>
 
-          {this.state.zipped ? (
-            <Button className="optionbuttons" variant="outline-info">
-              <a
-                className="downloadButton"
-                href={"imagezip/" + this.state.filename + ".zip"}
-                download
-              >
-                Download
-              </a>
-            </Button>
-          ) : (
-            <Button className="optionbuttons" variant="outline-info" disabled>
+          <Button className="optionbuttons" variant="outline-info">
+            <a
+              className="downloadButton"
+              href={"imagezip/" + this.state.filename + ".zip"}
+              download
+            >
               Download
-            </Button>
-          )}
+            </a>
+          </Button>
         </div>
 
         <div id="panel" class="jumbotron jumbotron-fluid">
@@ -304,6 +302,22 @@ class Core extends Component {
                 />
                 Fix Image link
               </label>
+            </div>
+            <div>
+              <p
+                style={{ color: "red", display: "inline-block", margin: "5px" }}
+              >
+                Zipping too long?
+              </p>
+              <p
+                style={{
+                  color: "white",
+                  display: "inline-block",
+                  margin: "5px"
+                }}
+              >
+                Try to click the download button again after 5 ~ 10 minutes.
+              </p>
             </div>
           </div>
         </div>
