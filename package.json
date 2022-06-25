@@ -17,7 +17,7 @@
     "file-system": "^2.2.2",
     "find-remove": "^1.2.2",
     "jszip": "^3.2.1",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.7",
     "nodemon": "^1.19.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
